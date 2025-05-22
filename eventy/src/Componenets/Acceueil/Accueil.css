@@ -1,0 +1,608 @@
+/* Base Styles */
+:root {
+  --primary-color: #4361ee;
+  --secondary-color: #3f37c9;
+  --accent-color: #4895ef;
+  --light-color: #f8f9fa;
+  --dark-color: #212529;
+  --success-color: #4bb543;
+  --danger-color: #ff3333;
+  --gray-color: #6c757d;
+  --light-gray: #e9ecef;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--dark-color);
+}
+
+.app {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Header Styles */
+.header {
+  margin-bottom: 30px;
+}
+
+.header-content {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 10px;
+}
+
+.header p {
+  font-size: 1.1rem;
+  color: var(--gray-color);
+  margin-bottom: 20px;
+}
+
+.search-bar {
+  display: flex;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid var(--light-gray);
+  border-radius: 30px 0 0 30px;
+  font-size: 1rem;
+  transition: var(--transition);
+}
+
+.search-bar input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.search-bar button {
+  padding: 0 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 0 30px 30px 0;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.search-bar button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Categories Styles */
+.categories-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 15px;
+  padding: 15px 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-color) var(--light-gray);
+}
+
+.categories-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.categories-scroll::-webkit-scrollbar-track {
+  background: var(--light-gray);
+  border-radius: 10px;
+}
+
+.categories-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--primary-color);
+  border-radius: 10px;
+}
+
+.category {
+  background: white;
+  padding: 12px 15px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 80px;
+  flex: 0 0 auto;
+  transition: var(--transition);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+}
+
+.category:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.category.active {
+  border-color: var(--primary-color);
+  background-color: rgba(67, 97, 238, 0.1);
+}
+
+.category span {
+  font-size: 24px;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.category p {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+/* Events Container */
+.events-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+.no-events {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.no-events p {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  color: var(--gray-color);
+}
+
+.no-events button {
+  padding: 10px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.no-events button:hover {
+  background-color: var(--secondary-color);
+}
+
+/* Event Card Styles */
+.event-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+
+.event-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.event-image-container {
+  position: relative;
+  height: 180px;
+}
+
+.event-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.save-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  padding: 6px 12px;
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--dark-color);
+  border: none;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.save-button.saved {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.save-button:hover {
+  background-color: white;
+}
+
+.event-category {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  padding: 4px 10px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.event-details {
+  padding: 20px;
+}
+
+.event-header h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--dark-color);
+}
+
+.event-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--gray-color);
+}
+
+.event-location {
+  font-size: 0.95rem;
+  color: var(--gray-color);
+  margin-bottom: 15px;
+}
+
+.event-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.interest-button, .comments-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.interest-button {
+  background-color: var(--light-gray);
+  color: var(--dark-color);
+}
+
+.interest-button.interested {
+  background-color: var(--success-color);
+  color: white;
+}
+
+.comments-button {
+  background-color: white;
+  color: var(--dark-color);
+  border: 1px solid var(--light-gray);
+}
+
+.interest-button:hover {
+  background-color: #d1d7e0;
+}
+
+.interest-button.interested:hover {
+  background-color: #3a9a33;
+}
+
+.comments-button:hover {
+  background-color: var(--light-gray);
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--light-gray);
+}
+
+.comment-input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.comment-input textarea {
+  resize: none;
+  padding: 12px;
+  border: 1px solid var(--light-gray);
+  border-radius: 8px;
+  min-height: 80px;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.comment-input textarea:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+}
+
+.send-button {
+  align-self: flex-end;
+  padding: 8px 16px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.send-button:hover {
+  background-color: var(--secondary-color);
+}
+
+.send-button:disabled {
+  background-color: var(--light-gray);
+  color: var(--gray-color);
+  cursor: not-allowed;
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.no-comments {
+  text-align: center;
+  color: var(--gray-color);
+  font-style: italic;
+  padding: 10px;
+}
+
+.comment-item {
+  background-color: var(--light-gray);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.comment-header, .reply-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 0.85rem;
+}
+
+.comment-user, .reply-user {
+  font-weight: 600;
+  color: var(--dark-color);
+}
+
+.comment-time, .reply-time {
+  color: var(--gray-color);
+}
+
+.comment-text, .reply-text {
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.like-button, .reply-button {
+  padding: 4px 8px;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.like-button {
+  color: var(--gray-color);
+}
+
+.like-button:hover {
+  color: var(--primary-color);
+  background-color: rgba(67, 97, 238, 0.1);
+}
+
+.reply-button {
+  color: var(--gray-color);
+}
+
+.reply-button:hover {
+  color: var(--dark-color);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.reply-input {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.reply-input input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--light-gray);
+  border-radius: 6px;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.reply-input input:focus {
+  outline: none;
+  border-color: var(--accent-color);
+}
+
+.replies-list {
+  margin-top: 10px;
+  padding-left: 15px;
+  border-left: 2px solid var(--light-gray);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.reply-item {
+  background-color: white;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .app {
+    padding: 15px;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .header p {
+    font-size: 1rem;
+  }
+  
+  .categories-scroll {
+    gap: 10px;
+  }
+  
+  .category {
+    min-width: 70px;
+    padding: 10px 12px;
+  }
+  
+  .category span {
+    font-size: 20px;
+  }
+  
+  .events-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .event-image-container {
+    height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .search-bar {
+    flex-direction: column;
+  }
+  
+  .search-bar input {
+    border-radius: 30px;
+    margin-bottom: 10px;
+  }
+  
+  .search-bar button {
+    border-radius: 30px;
+    padding: 10px;
+  }
+  
+  .category {
+    min-width: 60px;
+    padding: 8px 10px;
+  }
+  
+  .category span {
+    font-size: 18px;
+  }
+  
+  .category p {
+    font-size: 11px;
+  }
+  
+  .event-actions {
+    flex-direction: column;
+  }
+}
+/* Add these new styles to your existing CSS file */
+
+.category {
+  position: relative;
+  background: white;
+  padding: 12px 15px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 80px;
+  flex: 0 0 auto;
+  transition: var(--transition);
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.category-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.3;
+  z-index: 0;
+  transition: var(--transition);
+}
+
+.category:hover .category-background {
+  opacity: 0.4;
+}
+
+.category.active .category-background {
+  opacity: 0.5;
+}
+
+.category span,
+.category p {
+  position: relative;
+  z-index: 1;
+}
+
+/* Update the active state to work with the background */
+.category.active {
+  border-color: var(--primary-color);
+  background-color: rgba(67, 97, 238, 0.2);
+}
+
+/* Keep all your existing CSS below this point */

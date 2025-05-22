@@ -1,0 +1,31 @@
+/* src/components/ui/Alert.css */
+.alert {
+  padding: 1rem;
+  border-radius: 4px;
+  margin: 1rem 0;
+  font-weight: 500;
+}
+
+.alert-info {
+  background-color: #e7f5ff;
+  color: #1864ab;
+  border: 1px solid #74c0fc;
+}
+
+.alert-success {
+  background-color: #ebfbee;
+  color: #2b8a3e;
+  border: 1px solid #69db7c;
+}
+
+.alert-warning {
+  background-color: #fff9db;
+  color: #e67700;
+  border: 1px solid #ffd43b;
+}
+
+.alert-danger {
+  background-color: #fff5f5;
+  color: #c92a2a;
+  border: 1px solid #ff8787;
+}
