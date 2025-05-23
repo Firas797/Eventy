@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../Redux/auth/authSlice';
-import { fetchNotifications, markAsRead } from '../Redux/Notif/notifSlice';
+import { fetchNotifications } from '../Redux/Notif/notifSlice';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -13,17 +13,13 @@ const Navbar = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
-  const { items: notifications, unreadCount } = useSelector((state) => state.notifications);
+  const { items: notifications } = useSelector((state) => state.notifications);
   
+  // Get savedEvents and interestedEvents from Redux store
   const savedEvents = useSelector((state) => state.auth?.savedEvents || []);
   const interestedEvents = useSelector((state) => state.auth?.interestedEvents || []);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      dispatch(fetchNotifications());
-    }
-  }, [dispatch, isAuthenticated]);
-
+  // Get user name from Redux store or token
   const getUserName = () => {
     if (user?.name) return user.name;
     const token = localStorage.getItem('token');
@@ -38,46 +34,14 @@ const Navbar = () => {
     return '';
   };
 
-  useEffect(() => {
-  if (isAuthenticated) {
-    dispatch(fetchNotifications()).then((action) => {
-      // Check if we need to show welcome notification
-      const hasWelcome = action.payload?.notifications?.some(n => n.isWelcome);
-      if (!hasWelcome) {
-        // Create welcome notification if none exists
-        dispatch(addNotification({
-          _id: 'welcome-' + Date.now(),
-          message: "Welcome to our platform! We'll notify you about nearby events and activities. You can also create your own events. Enjoy! <3",
-          isWelcome: true,
-          read: false,
-          createdAt: new Date()
-        }));
-      }
-    });
-  }
-}, [dispatch, isAuthenticated]);
-  const handleNotificationClick = () => {
-    setIsNotificationOpen(!isNotificationOpen);
-    if (!isNotificationOpen) {
-      notifications.forEach(notification => {
-        if (!notification.read) {
-          dispatch(markAsRead(notification._id));
-        }
-      });
-    }
-  };
-
-  const handleNotificationItemClick = (notification) => {
-    if (notification.eventId) {
-      navigate(`/events/${notification.eventId._id}`);
-    }
-    if (!notification.read) {
-      dispatch(markAsRead(notification._id));
-    }
-    setIsNotificationOpen(false);
-  };
-
   const userName = getUserName();
+
+  // Fetch notifications when component mounts
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(fetchNotifications());
+    }
+  }, [dispatch, isAuthenticated]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -89,6 +53,13 @@ const Navbar = () => {
     navigate('/profile');
     setIsMenuOpen(false);
   };
+
+  const toggleNotifications = () => {
+    setIsNotificationOpen(!isNotificationOpen);
+  };
+
+  // Get last 5 notifications
+  const recentNotifications = notifications.slice(0, 5);
 
   return (
     <nav className="navbar">
@@ -106,36 +77,44 @@ const Navbar = () => {
             <li onClick={() => navigate('/SavedEvents')}>
               Saves {savedEvents.length > 0 && <span className="count-badge">{savedEvents.length}</span>}
             </li>
-            <li className="notification-icon-wrapper">
-              <div className="notification-icon" onClick={handleNotificationClick}>
-                <FaBell className="icon" />
-                {unreadCount > 0 && <span className="notification-count">{unreadCount}</span>}
-              </div>
+            <li className="notification-container">
+              <FaBell 
+                className="icon" 
+                onClick={toggleNotifications}
+              />
+              {notifications.length > 0 && (
+                <span className="notification-badge">
+                  {notifications.length > 9 ? '9+' : notifications.length}
+                </span>
+              )}
               {isNotificationOpen && (
                 <div className="notification-dropdown">
                   <div className="notification-header">
                     <h4>Notifications</h4>
                   </div>
-                  <div className="notification-list">
-                    {notifications.length === 0 ? (
-                      <div className="notification-empty">No notifications yet</div>
-                    ) : (
-                      notifications.map(notification => (
-                        <div 
-                          key={notification._id}
-                          className={`notification-item ${!notification.read ? 'unread' : ''}`}
-                          onClick={() => handleNotificationItemClick(notification)}
-                        >
-                          <div className="notification-content">
-                            {notification.message}
-                          </div>
-                          <div className="notification-time">
-                            {new Date(notification.createdAt).toLocaleTimeString()}
-                          </div>
+                  {recentNotifications.length > 0 ? (
+                    <>
+                      {recentNotifications.map((notification) => (
+                        <div key={notification._id} className="notification-item">
+                          <p className="notification-message">{notification.message}</p>
+                          <small className="notification-time">
+                            {new Date(notification.createdAt).toLocaleString()}
+                          </small>
                         </div>
-                      ))
-                    )}
-                  </div>
+                      ))}
+                      <button 
+                        className="view-all-btn"
+                        onClick={() => {
+                          navigate('/Notif');
+                          setIsNotificationOpen(false);
+                        }}
+                      >
+                        View All Notifications
+                      </button>
+                    </>
+                  ) : (
+                    <p className="no-notifications">No new notifications</p>
+                  )}
                 </div>
               )}
             </li>
@@ -180,9 +159,11 @@ const Navbar = () => {
               <li onClick={() => navigate('/SavedEvents')}>
                 Saves {savedEvents.length > 0 && <span className="count-badge">{savedEvents.length}</span>}
               </li>
-              <li onClick={handleNotificationClick}>
-                <FaBell className="icon" /> Notifications 
-                {unreadCount > 0 && <span className="mobile-notification-count">{unreadCount}</span>}
+              <li onClick={() => navigate('/Notif')}>
+                <FaBell className="icon" /> Notifications
+                {notifications.length > 0 && (
+                  <span className="count-badge">{notifications.length}</span>
+                )}
               </li>
               <li><FaEnvelope className="icon" /> Messages</li>
               {isAuthenticated ? (

@@ -3,7 +3,7 @@ const { promisify } = require('util');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const User = require('../../models/User/Users');
 const Message = require('../../models/Messages/Messages'); // Ensure this path is correct
-const Notification = require('../../models/Notification/Notification'); // Add this line
+
 // 🔒 JWT Helper
 const signToken = (id, name) => {
   return jwt.sign({ id, name }, process.env.JWT_SECRET, {
@@ -60,14 +60,6 @@ exports.signup = async (req, res) => {
       roles: { attendee: true }
     });
 
-    // Add welcome notification (add this right after user creation)
-    await Notification.create({
-      user: newUser._id,
-      message: "Welcome to Eventy! 🎉 We'll notify you about nearby events and activities. You can also create your own events. Enjoy! ❤️",
-      isWelcome: true,
-      createdAt: new Date()
-    });
-
     const token = signToken(newUser._id, newUser.name);
     res.status(201).json({
       status: 'success',
@@ -90,20 +82,6 @@ exports.login = async (req, res) => {
       throw new Error('Incorrect email or password');
     }
 
-    // Check if this is first login (optional)
-    if (!user.lastLogin) {
-      await Notification.create({
-        user: user._id,
-        message: "Welcome back to Eventy! 🌟 Check out nearby events or create your own!",
-        isWelcome: true,
-        createdAt: new Date()
-      });
-      
-      // Update last login time
-      user.lastLogin = new Date();
-      await user.save({ validateBeforeSave: false });
-    }
-
     const token = signToken(user._id, user.name);
     res.status(200).json({
       status: 'success',
@@ -113,6 +91,7 @@ exports.login = async (req, res) => {
         email: user.email,
         id: user._id,
         roles: user.roles  
+
       }
     });
   } catch (err) {

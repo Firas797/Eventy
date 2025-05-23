@@ -175,7 +175,7 @@ const handleSubmit = async (e) => {
 
     // 5. Handle success
     if (result.meta.requestStatus === 'fulfilled') {
-      navigate(`/events/${result.payload._id}`);
+      navigate(`/`);
     }
   } catch (error) {
     // 6. Enhanced error handling

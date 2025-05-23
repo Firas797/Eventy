@@ -121,8 +121,10 @@ const eventSlice = createSlice({
       })
       .addCase(createNewEvent.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.events.push(action.payload);
-        state.error = null;
+  if (!Array.isArray(state.events)) {
+    state.events = [];
+  }
+  state.events.push(action.payload);        state.error = null;
       })
       .addCase(createNewEvent.rejected, (state, action) => {
         state.status = 'failed';

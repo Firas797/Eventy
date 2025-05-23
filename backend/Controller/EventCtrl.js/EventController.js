@@ -1,7 +1,8 @@
 const Event = require('../../models/Events/EventsModel');
 const Notification = require('../../models/Notification/Notification'); // <-- create this model
-const { sendRealTimeNotification } = require('../../websocket');
+const User = require('../../models/User/Users'); // Make sure to import User model
 
+// Create event
 // Create event
 exports.createEvent = async (req, res) => {
   try {
@@ -9,14 +10,12 @@ exports.createEvent = async (req, res) => {
     let eventData;
     
     if (req.file) {
-      // If form-data was sent
       eventData = {
         ...req.body,
-        images: [req.file.buffer.toString('base64')], // or process file as needed
+        images: [req.file.buffer.toString('base64')],
         featuredImage: req.file.buffer.toString('base64')
       };
       
-      // Parse stringified fields
       if (req.body.coordinates) {
         eventData.coordinates = JSON.parse(req.body.coordinates);
       }
@@ -24,7 +23,6 @@ exports.createEvent = async (req, res) => {
         eventData.tags = JSON.parse(req.body.tags);
       }
     } else {
-      // If JSON was sent directly
       eventData = req.body;
     }
 
@@ -33,15 +31,48 @@ exports.createEvent = async (req, res) => {
       eventData.country = 'Tunisia';
     }
 
-    const event = await Event.create(eventData);
-        await sendEventNotifications(event, req.user._id, req.app.get('sendRealTimeNotification'));
+    // Add the creator to the event data
+    if (req.user?._id) {
+      eventData.creator = req.user._id;
+    }
+
+    // Create the event in database
+    const newEvent = await Event.create(eventData);
+
+    // Notification logic - send to all users
+    try {
+      // Get all users (or exclude creator if you want)
+      const filter = {};
+      if (req.user?._id) {
+        filter._id = { $ne: req.user._id }; // Exclude event creator
+      }
+      
+      const users = await User.find(filter);
+      
+      // Only proceed if there are users to notify
+      if (users.length > 0) {
+        const notificationPromises = users.map(user => 
+          Notification.create({
+            user: user._id,
+            message: `New event created: ${newEvent.title}`,
+            event: newEvent._id,
+            read: false
+          })
+        );
+        
+        await Promise.all(notificationPromises);
+      }
+    } catch (notificationError) {
+      console.error('Error creating notifications:', notificationError);
+      // Continue even if notifications fail
+    }
 
     res.status(201).json({
       status: 'success',
-      data: { event }
+      data: { event: newEvent }
     });
+
   } catch (err) {
-    // More detailed error logging
     console.error('Error creating event:', {
       body: req.body,
       file: req.file,
@@ -51,52 +82,10 @@ exports.createEvent = async (req, res) => {
     res.status(400).json({
       status: 'fail',
       message: err.message,
-      validationErrors: err.errors // Include Mongoose validation errors
+      validationErrors: err.errors
     });
   }
 };
-
-// Helper function to send notifications
-async function sendEventNotifications(event, creatorId, sendRealTimeNotification) {
-  try {
-    // Find users who should receive notifications
-    const usersToNotify = await User.find({
-      $and: [
-        { _id: { $ne: creatorId } },
-        { 'notificationPreferences.push': true },
-        { 
-          $or: [
-            { 'location.coordinates': { $near: { $geometry: { type: 'Point', coordinates: event.coordinates }, $maxDistance: 50000 } } },
-            { interests: { $in: event.tags } }
-          ]
-        }
-      ]
-    });
-
-    // Create notifications for each user
-    const notificationPromises = usersToNotify.map(async user => {
-      const notification = await Notification.create({
-        user: user._id,
-        message: `New event in your area: ${event.title}`,
-        eventId: event._id
-      });
-      
-      // Send real-time notification via WebSocket
-      if (sendRealTimeNotification) {
-        sendRealTimeNotification(user._id.toString(), {
-          type: 'NEW_EVENT',
-          data: notification
-        });
-      }
-      
-      return notification;
-    });
-
-    await Promise.all(notificationPromises);
-  } catch (err) {
-    console.error('Error sending notifications:', err);
-  }
-}
 
 // Get all events
 exports.getAllEvents = async (req, res) => {

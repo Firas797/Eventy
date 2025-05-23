@@ -16,6 +16,7 @@ import Interests from './Componenets/Interests/Interests';
 import SavedEvents from './Componenets/Saves/SavedEvents';
 import Profile from './Componenets/Profile/Profile';
 import EventDetails from './Componenets/Events/EventDetails';
+import NotificationList from './Componenets/Notification/NotificationList';
 
 function App() {
   const dispatch = useDispatch();
@@ -55,6 +56,7 @@ useEffect(() => {
 
         <Route path="/event/:id" element={<EventDetails />} />
 
+        <Route path="/Notif" element={<NotificationList />} />
 
         </Routes>
       </div>
